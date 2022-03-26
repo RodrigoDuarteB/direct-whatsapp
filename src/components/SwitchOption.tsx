@@ -1,33 +1,51 @@
-import React, { FC } from 'react'
-import { View, StyleSheet, Switch, Text } from 'react-native'
+import React, { FC, useState } from 'react'
+import { View, StyleSheet, Switch, Text, StyleProp, TextStyle, TouchableOpacity } from 'react-native'
+import { globalStyles } from '../styles/globals'
 import { Props } from '../utils/interfaces'
 
 interface IProps extends Props {
     label: string
     onChange: (value: boolean) => void
     initialValue?: boolean
-    textColor?: string
+    textStyle?: StyleProp<TextStyle>
     colorOnEnabled?: string
     colorOnDisabled?: string
 }
 
 const SwitchOption: FC<IProps> = (props) => {
+    const [value, setValue] = useState(props.initialValue)
+
+    const thumbColorEnabled = props.colorOnEnabled || globalStyles.colors.primary
+    const thumbColorDisabled = props.colorOnDisabled || globalStyles.colors.secondaryDark
+    
     return (
         <View style={[styles.container, props.style]}>
             <Switch
-                value={props.initialValue} 
-                onValueChange={value => props.onChange(value)}
-                thumbColor={'white'}
-                trackColor={{false: 'white', true: 'white'}}
+                value={value} 
+                onValueChange={value => {
+                    props.onChange(value)
+                    setValue(value)
+                }}
+                thumbColor={ value ? thumbColorEnabled : thumbColorDisabled}
+                trackColor={{false: 'gray', true: 'white'}}
             />
-            <Text style={{ color: props.textColor }}>{props.label}</Text>            
+
+            <TouchableOpacity onPress={() => setValue(!value)}>
+                <Text style={[styles.text, props.textStyle]}>
+                    {props.label}
+                </Text>            
+            </TouchableOpacity>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    text: {
+        marginLeft: 5
     }
 })
 

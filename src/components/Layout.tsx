@@ -8,12 +8,12 @@ interface IProps extends Props {
 
 }
 
-const Layout: FC<IProps> = ({ children }) => {
+const Layout: FC<IProps> = ({ children, style }) => {
     
     return (
         <LinearGradient 
             colors={[globalStyles.colors.primaryLight, globalStyles.colors.secondaryLight]} 
-            style={styles.container}
+            style={[styles.container, style]}
             locations={[0, 0.42]}
         >
             {children}
