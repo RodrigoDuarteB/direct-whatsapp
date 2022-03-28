@@ -1,22 +1,27 @@
 import React, { FC } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import Button from '../components/Button'
+import IconButton from '../components/IconButton'
 import Layout from '../components/Layout'
 import MessageBadge from '../components/MessageBadge'
 import SwitchOption from '../components/SwitchOption'
 import { Message } from '../models/models'
 import { ScreenProps } from '../utils/interfaces'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 interface IProps extends ScreenProps {
 
 }
 
-const History: FC<IProps> = (props) => {
+const History: FC<IProps> = ({ navigation }) => {
     return (
-        <Layout>
-            <View>
-                <Text>Historial de Mensajes</Text>
-                {/* IconButton */}
+        <Layout style={styles.container}>
+            <View style={styles.headerContainer}>
+                <Text style={styles.title}>Historial de Mensajes</Text>
+                <IconButton 
+                    onPress={() => navigation.goBack()}
+                    icon={<MaterialCommunityIcons name='arrow-expand-left' color={'black'} size={30}/>}
+                />
             </View>
 
             <SwitchOption 
@@ -29,7 +34,20 @@ const History: FC<IProps> = (props) => {
     )
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    container: {
+        padding: 8
+    },
+    headerContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    title: {
+        color: 'black',
+        fontSize: 25,
+        fontWeight: 'bold'
+    }
+})
 
 
 

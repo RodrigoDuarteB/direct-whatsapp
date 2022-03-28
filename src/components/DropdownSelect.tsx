@@ -68,7 +68,9 @@ const CountryBadge: FC<ICountryBadgeProps> = ({ country, selected }) => {
         >
             <View style={countryBadgeStyles.flagCode}>
                 <MaterialCommunityIcons name='diving-scuba-flag' color={'white'} size={20}/>
-                <Text style={[countryBadgeStyles.text, {color: selected ? 'black' : 'white'}]}>{country.code}</Text>
+                <Text style={[countryBadgeStyles.text, {color: selected ? 'black' : 'white', marginLeft: 3}]}>
+                    {country.code}
+                </Text>
             </View>
 
             <Text style={[countryBadgeStyles.text, {color: selected ? 'black' : 'white'}]}>{country.name}</Text>
@@ -173,7 +175,7 @@ const CountriesDropdown: FC<ICountriesDropdownProps> = (props) => {
             />
             <CountriesList />
         </View>
-    )
+)
 }
 
 const countriesDropdownStyles = StyleSheet.create({
