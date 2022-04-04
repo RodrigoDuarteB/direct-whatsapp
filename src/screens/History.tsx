@@ -1,13 +1,17 @@
-import React, { FC } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import React, { FC, useEffect, useState } from 'react'
+import { StyleSheet, Text, View, ScrollView } from 'react-native'
 import Button from '../components/Button'
 import IconButton from '../components/IconButton'
 import Layout from '../components/Layout'
 import MessageBadge from '../components/MessageBadge'
 import SwitchOption from '../components/SwitchOption'
 import { Message } from '../models/models'
-import { ScreenProps } from '../utils/interfaces'
+import { Props, ScreenProps } from '../utils/interfaces'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import Disabled from '../components/Disabled'
+import { globalStyles } from '../styles/globals'
+import AlertChooseAction from '../components/AlertChooseAction'
+import { getMessages, removeMessage, removeMessages } from '../services/Messages.service'
 
 interface IProps extends ScreenProps {
 
@@ -24,10 +28,13 @@ const History: FC<IProps> = ({ navigation }) => {
                 />
             </View>
 
-            <SwitchOption 
-                label='Sincronizar con la nube (Proximamente)'
-                onChange={() => {}}
-            />
+            <Disabled style={styles.switch}>
+                <SwitchOption 
+                    label='Sincronizar con la nube (Proximamente)'
+                    onChange={() => {}}
+                    textStyle={{ color: 'black', fontSize: 15 }}
+                />
+            </Disabled>
 
             <MessagesList />
         </Layout>
@@ -46,45 +53,114 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 25,
         fontWeight: 'bold'
+    },
+    switch: {
+        alignSelf: 'center',
+        marginVertical: 8
     }
 })
 
 
 
-interface IMessagesListProps {
+interface IMessagesListProps extends Props{
 
 }
 
 const MessagesList: FC<IMessagesListProps> = (props) => {
-    const data: Array<Message> = []
+    const [messages, setMessages] = useState<Array<Message>>([])
+    const [deleting, setDeleting] = useState(false)
+
+    useEffect(() => {
+        getMessages()
+        .then(res => setMessages(res))
+    }, [deleting])
 
     return (
-        <View>
+        <View style={[messagesListStyles.container, { justifyContent: messages.length > 0 ? 'flex-start' : 'center'}, props.style]}>
+
+            <AlertChooseAction 
+                visible={deleting}
+                condition='Está seguro que desea limpiar el historial?'
+                onAccept={async () => {
+                    await removeMessages()
+                    setDeleting(false)
+                }}
+                onReject={() => {
+                    setDeleting(false)
+                }}
+            />
             {
-                data.length > 0 ?
-                <View>
+                messages.length > 0 ?
+                <View style={messagesListStyles.subcontainer}>
                     <Button 
                         label='Limpiar Historial'
-                        onPress={() => {}}
-                    />
+                        onPress={() => setDeleting(true)}
+                        style={messagesListStyles.button}
+                        textStyle={messagesListStyles.buttonText}
+                    >
+                        <MaterialCommunityIcons name='delete-clock' color={'black'} size={27}/>
+                    </Button>
 
-                    <View>
+                    <ScrollView
+                        style={messagesListStyles.listContainer}
+                        contentContainerStyle={messagesListStyles.listContent}
+                    >
                         {
-                            data.map((message, index) => 
+                            messages.map((message, index, array) => 
                                 <MessageBadge 
                                     key={index}
                                     message={message}
+                                    style={{ marginBottom: index < array.length - 1 ? 9 : 0 }}
+                                    onDelete={() => {
+                                        removeMessage(message.id)
+                                        .then(_ => {
+                                            getMessages()
+                                            .then(res => setMessages(res))
+                                        })
+                                    }}
                                 />
                             )
                         }
-                    </View>
+                    </ScrollView>
                 </View>
                 :
-                <Text>No hay mensajes Guardados</Text>
+                <Text style={messagesListStyles.textOnEmpty}>No hay mensajes Guardados</Text>
             }
         </View>
     )
 }
 
-const messagesListStyles = StyleSheet.create({})
+const messagesListStyles = StyleSheet.create({
+    container: {
+        flexGrow: 1,
+    },
+    textOnEmpty: {
+        fontWeight: 'bold',
+        fontSize: 25,
+        alignSelf: 'center',
+    },
+    button: {
+        backgroundColor: globalStyles.colors.primaryLight,
+        borderRadius: 10,
+        paddingVertical: 8,
+        paddingHorizontal: 25,
+        width: '50%',
+        marginVertical: 5,
+        alignSelf: 'center'
+    },
+    buttonText: {
+        color: 'black',
+        fontWeight: 'bold',
+        fontSize: 17,
+    },
+    subcontainer: {
+        justifyContent: 'center'
+    },
+    listContainer: {
+        marginTop: 8
+    },
+    listContent: {
+        paddingVertical: 5
+    }
+})
 export default History

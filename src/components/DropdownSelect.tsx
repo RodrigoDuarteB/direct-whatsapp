@@ -1,40 +1,85 @@
 import React, { FC, useState } from 'react'
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView, Image, Alert } from 'react-native'
 import { Country } from '../models/models'
 import { globalStyles } from '../styles/globals'
-import { Props } from '../utils/interfaces'
+import { ControlledInput, Props } from '../utils/interfaces'
 import Input from './Input'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Divider from './Divider'
+import { useCountries } from '../context/Countries.context'
+import CountryCode from './CountryCode'
+import { Controller } from 'react-hook-form'
+import InputErrorText from './InputErrorText'
 
-interface IProps extends Props {
+interface IProps extends Props, ControlledInput {
     label: string
-    onSelect: (selected: Country) => void
+    onSelect?: Function
 }
 
-const DropdownSelect: FC<IProps> = (props) => {
+const DropdownSelect: FC<IProps> = ({ label, controlled, style }) => {
+    const { selected } = useCountries()
     const [downed, setDowned] = useState(false)
 
-    const country: Country = {
-        code: '+51',
-        name: 'Argentina'
-    }
+    return controlled ? (
+        <Controller
+            {...controlled}
+            render={({ formState: { errors } }) => (
+                <View>
+                    <Text style={styles.label}>
+                        {label} {errors[controlled.name] && <InputErrorText />}
+                    </Text>
+                    
+                    <TouchableOpacity 
+                        style={[styles.subcontainer, { borderWidth: downed ? 1 : 0 }, style]}
+                        onPress={() => setDowned(!downed)}
+                    >
+                        <View style={styles.flagCodeContainer}>
+                            <CountryCode />
+                            {
+                                selected ? 
+                                <Image source={{ uri: selected.flag }} style={styles.flag}/>
+                                :
+                                <MaterialCommunityIcons name='diving-scuba-flag' color={'white'} size={20}/>
+                            }
+                        </View>
+                        
+                        <MaterialIcons 
+                            name={ downed ? 'expand-less' : 'expand-more' } 
+                            color={'white'} 
+                            size={20}
+                            style={{ alignSelf: 'flex-end' }}
+                        />
+                    </TouchableOpacity>
 
-    return (
+                    {downed && <CountriesDropdown />}
+                </View>
+            )}
+        />
+    ) : (
         <View>
-            <Text>{props.label}</Text>
+            <Text style={styles.label}>{label}</Text>
             
             <TouchableOpacity 
-                style={[styles.subcontainer, props.style]}
+                style={[styles.subcontainer, { borderWidth: downed ? 1 : 0 }, style]}
                 onPress={() => setDowned(!downed)}
             >
-                <View>
-                    <Text>{country.code}</Text>
-                    <MaterialCommunityIcons name='diving-scuba-flag' color={'white'} size={20}/>
+                <View style={styles.flagCodeContainer}>
+                    <CountryCode />
+                    {
+                        selected ? 
+                        <Image source={{ uri: selected.flag }} style={styles.flag}/>
+                        :
+                        <MaterialCommunityIcons name='diving-scuba-flag' color={'white'} size={20}/>
+                    }
                 </View>
                 
-                <MaterialIcons name={ downed ? 'expand-less' : 'expand-more' } color={'white'} size={20}/>
+                <MaterialIcons 
+                    name={ downed ? 'expand-less' : 'expand-more' } 
+                    color={'white'} 
+                    size={20}
+                    style={{ alignSelf: 'flex-end' }}
+                />
             </TouchableOpacity>
 
             {downed && <CountriesDropdown />}
@@ -50,7 +95,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 5,
         borderTopLeftRadius: 15,
-        borderBottomLeftRadius: 15
+        borderBottomLeftRadius: 15,
+        borderColor: globalStyles.colors.primaryLight
+    },
+    flag: {
+        width: 20,
+        height: 15
+    },
+    label: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 15
+    },
+    flagCodeContainer: {
+        alignItems: 'center'
     }
 })
 
@@ -61,15 +119,20 @@ interface ICountryBadgeProps {
     selected?: boolean
 }
 
-const CountryBadge: FC<ICountryBadgeProps> = ({ country, selected }) => {
+const CountryBadge: FC<ICountryBadgeProps> = ({ country, selected, onPress }) => {
+    const { code } = country
     return (
         <TouchableOpacity
             style={[countryBadgeStyles.container, { backgroundColor: selected ? '#c4c4c4' : '' }]}
+            onPress={() => onPress()}
         >
             <View style={countryBadgeStyles.flagCode}>
-                <MaterialCommunityIcons name='diving-scuba-flag' color={'white'} size={20}/>
+                {/* flag */}
+                <Image source={{uri: country.flag}} style={countryBadgeStyles.flag}/>
+
+                {/* name */}
                 <Text style={[countryBadgeStyles.text, {color: selected ? 'black' : 'white', marginLeft: 3}]}>
-                    {country.code}
+                    {code.root+(code.suffix)}
                 </Text>
             </View>
 
@@ -91,20 +154,21 @@ const countryBadgeStyles = StyleSheet.create({
     text: {
         fontWeight: '600',
         fontSize: 15
+    },
+    flag: {
+        width: 20,
+        height: 20
     }
 })
 
 
 interface ICountriesListProps {
-
+    countries: Array<Country>
 }
 
-const CountriesList: FC<ICountriesListProps> = (props) => {
+const CountriesList: FC<ICountriesListProps> = ({ countries }) => {
+    const { selected, setSelected } = useCountries()
 
-    const countries: Array<Country> = [
-        { code: '+591', name: 'Bolivia' },
-        { code: '+51', name: 'Argentina' }
-    ]
     return (
         <View style={countriesListStyles.container}>
             {
@@ -116,17 +180,23 @@ const CountriesList: FC<ICountriesListProps> = (props) => {
                     </View>
 
                     <Divider style={countriesListStyles.divider}/>
-
+                
+                    <ScrollView
+                        style={{ height: 200 }}
+                    >
                     {
                         countries.map((country, index) => 
                             <CountryBadge 
                                 key={index}
                                 country={country}
-                                onPress={() => {}}
-                                selected={index === 1}
+                                onPress={() => {
+                                    setSelected(country)
+                                }}
+                                selected={country.name === selected?.name}
                             />    
                         )
                     }
+                    </ScrollView>
                 </View>
                 :
                 <Text style={countriesListStyles.text}>
@@ -163,27 +233,41 @@ const countriesListStyles = StyleSheet.create({
 
 
 interface ICountriesDropdownProps {
-
+    children?: any
 }
 
 const CountriesDropdown: FC<ICountriesDropdownProps> = (props) => {
+    const { countries } = useCountries()
+    const [filteredCountries, setFilteredCountries] = useState(countries)
+
+    function filterCountries(value: string) {
+        setFilteredCountries(filteredCountries.filter(country => 
+            country.name.toLowerCase().includes(value.toLowerCase()) ||
+            country.code.toString().includes(value.toLowerCase())
+        ))
+    }
+    
     return (
-        <View style={countriesDropdownStyles.container}>
+        <View 
+            style={countriesDropdownStyles.container}
+        >
             <Input 
                 style={countriesDropdownStyles.input}
                 placeholder='Busca por nombre o codigo'
+                onChangeText={filterCountries}
             />
-            <CountriesList />
+            <CountriesList countries={filteredCountries}/>
         </View>
-)
+    )
 }
 
 const countriesDropdownStyles = StyleSheet.create({
     container: {
+        maxHeight: 320,
         backgroundColor: globalStyles.colors.secondary,
         position: 'absolute',
         zIndex: 1,
-        top: 73,
+        top: 81,
         width: 230,
         shadowColor: globalStyles.colors.primary,
         shadowOffset: {

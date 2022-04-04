@@ -5,6 +5,7 @@ export const globalStyles = {
         primaryDark: '#00911b',
         secondary: '#202c33',
         secondaryLight: '#48555c',
-        secondaryDark: '#00000c'
+        secondaryDark: '#00000c',
+        red: '#F76A6A'
     }
 }

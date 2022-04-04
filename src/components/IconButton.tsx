@@ -11,7 +11,7 @@ const IconButton: FC<IProps> = (props) => {
     return (
         <TouchableOpacity 
             onPress={() => props.onPress()}
-            style={props.style}
+            style={[{alignSelf: 'flex-start'}, props.style]}
         >
             {props.icon}
         </TouchableOpacity>

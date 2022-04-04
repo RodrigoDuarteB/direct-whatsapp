@@ -3,12 +3,12 @@ import { View, StyleSheet } from 'react-native'
 import { Props } from '../utils/interfaces'
 
 interface IProps extends Props {
-
+    enabled?: boolean
 }
 
-const Badge: FC<IProps> = (props) => {
+const Disabled: FC<IProps> = (props) => {
     return (
-        <View style={[styles.container, props.style]}>
+        <View pointerEvents={props.enabled ? 'auto' : 'none'} style={[styles.container, props.style]}>
             {props.children}
         </View>
     )
@@ -16,11 +16,9 @@ const Badge: FC<IProps> = (props) => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#c4c4c4',
-        borderRadius: 15,
-        paddingHorizontal: 10,
-        paddingVertical: 5 
+        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+        alignSelf: 'flex-start'
     }
 })
 
-export default Badge
+export default Disabled
