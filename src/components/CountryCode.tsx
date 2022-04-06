@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react'
-import { View, StyleSheet, TouchableOpacity, Text, ScrollView } from 'react-native'
+import { View, StyleSheet, TouchableOpacity, Text, ScrollView, FlatList } from 'react-native'
 import { useCountries } from '../context/Countries.context'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import AbsoluteDropdown, { DropdownProps } from './AbsoluteDropdown'
@@ -66,6 +66,7 @@ interface ISuffixesDropdownProps extends DropdownProps {
 
 const SuffixesDropdown: FC<ISuffixesDropdownProps> = (props) => {
     const { selected } = useCountries()
+
     return (
         <AbsoluteDropdown {...props} style={suffixesDropdownStyles.container} >
             <Text style={suffixesDropdownStyles.title}>Sufijos</Text>
@@ -74,20 +75,16 @@ const SuffixesDropdown: FC<ISuffixesDropdownProps> = (props) => {
 
             {
                 selected && 
-                <ScrollView
-                    style={{}}
-                    contentContainerStyle={suffixesDropdownStyles.suffixesContainer}
-                >
-                    {
-                        selected.idd.suffixes.map((suffix, index) => 
-                            <SuffixBadge 
-                                key={index}
-                                suffix={suffix}
-                                isSelected={suffix === selected.code.suffix}
-                            />
-                        )
+                <FlatList 
+                    data={selected.idd.suffixes}
+                    renderItem={({ item, index }) => 
+                        <SuffixBadge 
+                            key={index}
+                            suffix={item}
+                            isSelected={item === selected.code.suffix}
+                        />
                     }
-                </ScrollView>
+                />
             }
         </AbsoluteDropdown>
     )

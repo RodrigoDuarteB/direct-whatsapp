@@ -1,9 +1,8 @@
-import React, { FC, useState } from 'react'
-import { View, StyleSheet, Text, TouchableOpacity, ScrollView, Image, Alert } from 'react-native'
+import React, { FC, memo, useState } from 'react'
+import { View, StyleSheet, Text, TouchableOpacity, Image, FlatList } from 'react-native'
 import { Country } from '../models/models'
 import { globalStyles } from '../styles/globals'
 import { ControlledInput, Props } from '../utils/interfaces'
-import Input from './Input'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Divider from './Divider'
@@ -11,6 +10,7 @@ import { useCountries } from '../context/Countries.context'
 import CountryCode from './CountryCode'
 import { Controller } from 'react-hook-form'
 import InputErrorText from './InputErrorText'
+import CodeFilter from './CodeFilter'
 
 interface IProps extends Props, ControlledInput {
     label: string
@@ -166,7 +166,7 @@ interface ICountriesListProps {
     countries: Array<Country>
 }
 
-const CountriesList: FC<ICountriesListProps> = ({ countries }) => {
+const CountriesList: FC<ICountriesListProps> = memo(({ countries }) => {
     const { selected, setSelected } = useCountries()
 
     return (
@@ -180,23 +180,22 @@ const CountriesList: FC<ICountriesListProps> = ({ countries }) => {
                     </View>
 
                     <Divider style={countriesListStyles.divider}/>
-                
-                    <ScrollView
-                        style={{ height: 200 }}
-                    >
-                    {
-                        countries.map((country, index) => 
+
+                    <FlatList 
+                        data={countries}
+                        renderItem={({ item, index }) => 
                             <CountryBadge 
                                 key={index}
-                                country={country}
+                                country={item}
                                 onPress={() => {
-                                    setSelected(country)
+                                    setSelected(item)
                                 }}
-                                selected={country.name === selected?.name}
-                            />    
-                        )
-                    }
-                    </ScrollView>
+                                selected={item.name === selected!.name}
+                            />
+                        }
+                        style={{ height: 200 }}
+                        initialNumToRender={10}
+                    />
                 </View>
                 :
                 <Text style={countriesListStyles.text}>
@@ -205,7 +204,7 @@ const CountriesList: FC<ICountriesListProps> = ({ countries }) => {
             }
         </View>
     ) 
-}
+}, (prev, curr) => prev.countries.length === curr.countries.length)
 
 const countriesListStyles = StyleSheet.create({
     container: {
@@ -236,12 +235,12 @@ interface ICountriesDropdownProps {
     children?: any
 }
 
-const CountriesDropdown: FC<ICountriesDropdownProps> = (props) => {
+const CountriesDropdown: FC<ICountriesDropdownProps> = memo((props) => {
     const { countries } = useCountries()
     const [filteredCountries, setFilteredCountries] = useState(countries)
 
     function filterCountries(value: string) {
-        setFilteredCountries(filteredCountries.filter(country => 
+        setFilteredCountries(countries.filter(country => 
             country.name.toLowerCase().includes(value.toLowerCase()) ||
             country.code.toString().includes(value.toLowerCase())
         ))
@@ -251,15 +250,11 @@ const CountriesDropdown: FC<ICountriesDropdownProps> = (props) => {
         <View 
             style={countriesDropdownStyles.container}
         >
-            <Input 
-                style={countriesDropdownStyles.input}
-                placeholder='Busca por nombre o codigo'
-                onChangeText={filterCountries}
-            />
+            <CodeFilter onFilter={filterCountries}/>
             <CountriesList countries={filteredCountries}/>
         </View>
     )
-}
+})
 
 const countriesDropdownStyles = StyleSheet.create({
     container: {
@@ -278,12 +273,6 @@ const countriesDropdownStyles = StyleSheet.create({
         elevation: 8,
         borderRadius: 10,
         borderTopLeftRadius: 0
-    },
-    input: {
-        backgroundColor: globalStyles.colors.secondaryLight,
-        margin: 10,
-        borderRadius: 15,
-        paddingHorizontal: 10
     }
 })
 

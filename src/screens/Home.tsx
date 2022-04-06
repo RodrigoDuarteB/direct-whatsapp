@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import AppLogo from '../components/AppLogo'
 import Button from '../components/Button'
 import DropdownSelect from '../components/DropdownSelect'
@@ -35,18 +35,20 @@ const Home: FC<IProps> = ({ navigation }) => {
     return (
         <CountriesProvider>
             <Layout>
-                <AlertMessage 
-                    title='Errores'
-                    onAccept={() => setShowErrors(false)}
-                    visible={showErrors}
-                    style={{}}
-                >
-                    <Text>Errores</Text>
-                    <Text>Errores</Text>
-                </AlertMessage>
-                <AppLogo style={styles.logo}/>
-                <Form />
-                <GoHistory navigation={navigation}/>
+                <ScrollView>
+                    <AlertMessage 
+                        title='Errores'
+                        onAccept={() => setShowErrors(false)}
+                        visible={showErrors}
+                        style={{}}
+                    >
+                        <Text>Errores</Text>
+                        <Text>Errores</Text>
+                    </AlertMessage>
+                    <AppLogo style={styles.logo}/>
+                    <Form />
+                    <GoHistory navigation={navigation}/>
+                </ScrollView>
             </Layout>
         </CountriesProvider>
     )
@@ -69,20 +71,20 @@ const Form: FC<IFormProps> = (props) => {
 
     const saveContactEnabled = watch('saveContact', true)
 
-    async function send(form: SendMessage) {
-
+    async function send(form: any) {
+        let formCasted: SendMessage = form
         //save contact
-        if(form.saveContact){
-            await saveContact(form.contactName!, selected!, form.phoneNumber)
+        if(formCasted.saveContact){
+            await saveContact(formCasted.contactName!, selected!, formCasted.phoneNumber)
         }
 
         //save message
-        if(form.saveMessage){
-            await saveMessage(form, selected!)
+        if(formCasted.saveMessage){
+            await saveMessage(formCasted, selected!)
         }
 
         //finally send message to whatsapp (we sure that selected is not null through form)
-        await sendMessage(selected!, form.phoneNumber, form.message)
+        await sendMessage(selected!, formCasted.phoneNumber, formCasted.message)
     }
     
     return (
@@ -103,8 +105,8 @@ const Form: FC<IFormProps> = (props) => {
 
                 {/* phone number */}
                 <Input 
-                    label='Numero de Telefono' 
-                    style={formStyles.phoneInput}
+                    label='Número de Telefono' 
+                    style={[formStyles.phoneInput, formStyles.inputText]}
                     keyboardType='numeric'
                     containerStyle={{ marginLeft: 5 }}
                     controlled={{
@@ -119,7 +121,7 @@ const Form: FC<IFormProps> = (props) => {
 
             <Input 
                 label='Mensaje' 
-                style={formStyles.messageInput} 
+                style={[formStyles.messageInput, formStyles.inputText]} 
                 multiline 
                 numberOfLines={7}
                 controlled={{
@@ -146,7 +148,7 @@ const Form: FC<IFormProps> = (props) => {
                     saveContactEnabled && 
                         <Input 
                             label='Nombre Contacto'
-                            style={{ marginBottom: 5 }}
+                            style={[formStyles.contactInput, formStyles.inputText]}
                             controlled={{
                                 name: 'contactName',
                                 control,
@@ -190,12 +192,18 @@ const formStyles = StyleSheet.create({
     },
     phoneInput: {
         borderTopRightRadius: 15,
-        borderBottomRightRadius: 15
+        borderBottomRightRadius: 15,
+        flexGrow: 1
     },
     messageInput: {
         borderRadius: 15,
+        paddingVertical: 10,
+        textAlignVertical: 'top'
+    },
+    inputText: {
+        fontSize: 16,
+        fontWeight: 'bold',
         paddingHorizontal: 15,
-        paddingVertical: 10
     },
     switchText: {
         fontWeight: 'bold',
@@ -218,6 +226,10 @@ const formStyles = StyleSheet.create({
         color: 'black',
         marginRight: 10,
         fontSize: 16
+    },
+    contactInput: {
+        borderRadius: 10,
+        marginBottom: 5
     }
 })
 

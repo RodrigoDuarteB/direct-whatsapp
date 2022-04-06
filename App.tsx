@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import React, { FC } from 'react'
 import History from './src/screens/History'
 import Home from './src/screens/Home'
+import Test from './src/screens/Test'
 
 interface IProps {
 
@@ -21,6 +22,7 @@ const App: FC<IProps> = (props) => {
             >
                 <Stack.Screen name='Home' component={Home}/>
                 <Stack.Screen name='History' component={History}/>
+                <Stack.Screen name='Test' component={Test}/>
             </Stack.Navigator>
         </NavigationContainer>
     )

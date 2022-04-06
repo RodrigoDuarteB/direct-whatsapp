@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react'
-import { StyleSheet, Text, View, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, FlatList } from 'react-native'
 import Button from '../components/Button'
 import IconButton from '../components/IconButton'
 import Layout from '../components/Layout'
@@ -18,8 +18,12 @@ interface IProps extends ScreenProps {
 }
 
 const History: FC<IProps> = ({ navigation }) => {
+    
     return (
         <Layout style={styles.container}>
+            {/* <ScrollView> */}
+
+            
             <View style={styles.headerContainer}>
                 <Text style={styles.title}>Historial de Mensajes</Text>
                 <IconButton 
@@ -37,6 +41,7 @@ const History: FC<IProps> = ({ navigation }) => {
             </Disabled>
 
             <MessagesList />
+            {/* </ScrollView> */}
         </Layout>
     )
 }
@@ -100,28 +105,26 @@ const MessagesList: FC<IMessagesListProps> = (props) => {
                     >
                         <MaterialCommunityIcons name='delete-clock' color={'black'} size={27}/>
                     </Button>
-
-                    <ScrollView
-                        style={messagesListStyles.listContainer}
-                        contentContainerStyle={messagesListStyles.listContent}
-                    >
-                        {
-                            messages.map((message, index, array) => 
-                                <MessageBadge 
-                                    key={index}
-                                    message={message}
-                                    style={{ marginBottom: index < array.length - 1 ? 9 : 0 }}
-                                    onDelete={() => {
-                                        removeMessage(message.id)
-                                        .then(_ => {
-                                            getMessages()
-                                            .then(res => setMessages(res))
-                                        })
-                                    }}
-                                />
-                            )
+                    
+                    <FlatList 
+                        data={messages}
+                        renderItem={({ item, index }) => 
+                            <MessageBadge 
+                                key={index}
+                                message={item}
+                                style={{ marginBottom: index < messages.length - 1 ? 9 : 0 }}
+                                onDelete={() => {
+                                    removeMessage(item.id)
+                                    .then(_ => {
+                                        getMessages()
+                                        .then(res => setMessages(res))
+                                    })
+                                }}
+                            />
                         }
-                    </ScrollView>
+                        style={messagesListStyles.list}
+                    />
+
                 </View>
                 :
                 <Text style={messagesListStyles.textOnEmpty}>No hay mensajes Guardados</Text>
@@ -154,13 +157,11 @@ const messagesListStyles = StyleSheet.create({
         fontSize: 17,
     },
     subcontainer: {
-        justifyContent: 'center'
+        justifyContent: 'center',
+        flex: 1
     },
-    listContainer: {
-        marginTop: 8
-    },
-    listContent: {
-        paddingVertical: 5
+    list: {
+        paddingVertical: 5,
     }
 })
 export default History
