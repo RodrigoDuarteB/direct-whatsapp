@@ -21,9 +21,6 @@ const History: FC<IProps> = ({ navigation }) => {
     
     return (
         <Layout style={styles.container}>
-            {/* <ScrollView> */}
-
-            
             <View style={styles.headerContainer}>
                 <Text style={styles.title}>Historial de Mensajes</Text>
                 <IconButton 
@@ -41,7 +38,6 @@ const History: FC<IProps> = ({ navigation }) => {
             </Disabled>
 
             <MessagesList />
-            {/* </ScrollView> */}
         </Layout>
     )
 }

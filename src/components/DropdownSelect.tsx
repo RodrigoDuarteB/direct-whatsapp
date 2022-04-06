@@ -262,7 +262,7 @@ const countriesDropdownStyles = StyleSheet.create({
         backgroundColor: globalStyles.colors.secondary,
         position: 'absolute',
         zIndex: 1,
-        top: 81,
+        top: 75,
         width: 230,
         shadowColor: globalStyles.colors.primary,
         shadowOffset: {

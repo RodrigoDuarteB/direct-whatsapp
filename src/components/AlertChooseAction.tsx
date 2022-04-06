@@ -12,6 +12,7 @@ const AlertChooseAction: FC<IProps> = (props) => {
         <Modal
             visible={props.visible}
             onRequestClose={() => props.onReject()}
+            animationType='fade'
         >
             <ChooseAction 
                 {...props}
