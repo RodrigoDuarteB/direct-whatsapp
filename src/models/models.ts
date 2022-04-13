@@ -2,7 +2,7 @@ export interface Country {
     code: {
         root: string
         suffix: string
-    }
+    } | string
     name: string
     idd: {
         root: string

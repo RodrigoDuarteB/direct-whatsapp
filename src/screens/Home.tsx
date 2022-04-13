@@ -48,6 +48,10 @@ const Home: FC<IProps> = ({ navigation }) => {
                     <AppLogo style={styles.logo}/>
                     <Form />
                     <GoHistory navigation={navigation}/>
+                    <Button 
+                        label='Go to Test'
+                        onPress={() => navigation.navigate('Test')}
+                    />
                 </ScrollView>
             </Layout>
         </CountriesProvider>

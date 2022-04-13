@@ -21,7 +21,14 @@ const CountryCode: FC<IProps> = (props) => {
             onPress={() => hasMoreThanOneSuffix && setDropped(!dropped)}
             style={styles.container}
         >
-            <Text style={[styles.code]}>{`${selected.code.root}(${selected.code.suffix})`}</Text>
+            <Text style={[styles.code]}>
+                {
+                    typeof selected.code !== 'string' ?
+                    `${selected.code.root && selected.code.root}(${selected.code.suffix})`
+                    :
+                    selected.code
+                }
+            </Text>
             {
                 hasMoreThanOneSuffix && 
                 <MaterialIcons 
@@ -81,7 +88,7 @@ const SuffixesDropdown: FC<ISuffixesDropdownProps> = (props) => {
                         <SuffixBadge 
                             key={index}
                             suffix={item}
-                            isSelected={item === selected.code.suffix}
+                            isSelected={typeof selected.code !== 'string' ? item === selected.code.suffix : item === selected.code}
                         />
                     }
                 />
@@ -128,7 +135,7 @@ const SuffixBadge: FC<ISuffixBadgeProps> = ({ suffix, isSelected }) => {
     const { selected, setSelected } = useCountries()
 
     function changeSuffix(){
-        selected && setSelected({...selected, code: {
+        selected && typeof selected.code !== 'string' && setSelected({...selected, code: {
             ...selected.code, 
             suffix
         }})

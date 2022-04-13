@@ -26,6 +26,8 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.27,
         borderRadius: 10,
+        top: '100%',
+        left: 0,
     }
 })
 

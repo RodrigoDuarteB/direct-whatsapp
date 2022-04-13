@@ -37,7 +37,7 @@ const DropdownSelect: FC<IProps> = ({ label, controlled, style }) => {
                         <View style={styles.flagCodeContainer}>
                             <CountryCode />
                             {
-                                selected ? 
+                                selected && selected.flag ? 
                                 <Image source={{ uri: selected.flag }} style={styles.flag}/>
                                 :
                                 <MaterialCommunityIcons name='diving-scuba-flag' color={'white'} size={20}/>
@@ -132,7 +132,7 @@ const CountryBadge: FC<ICountryBadgeProps> = ({ country, selected, onPress }) =>
 
                 {/* name */}
                 <Text style={[countryBadgeStyles.text, {color: selected ? 'black' : 'white', marginLeft: 3}]}>
-                    {code.root+(code.suffix)}
+                    {typeof code !== 'string' ? code.root+(code.suffix) : code}
                 </Text>
             </View>
 

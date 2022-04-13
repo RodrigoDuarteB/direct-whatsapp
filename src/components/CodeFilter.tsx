@@ -1,5 +1,8 @@
 import React, { FC, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { View, StyleSheet, Text } from 'react-native'
+import { useCountries } from '../context/Countries.context'
+import { getCountryByCallingCode } from '../services/Countries.service'
 import { globalStyles } from '../styles/globals'
 import Button from './Button'
 import Input from './Input'
@@ -9,7 +12,15 @@ interface IProps {
 }
 
 const CodeFilter: FC<IProps> = ({ onFilter }) => {
+    const { setSelected } = useCountries()
     const [inserting, setInserting] = useState(false)
+    const { handleSubmit, control } = useForm()
+
+    async function setCodeManually(data: any){
+        console.log(data.code)
+        const countryByCode = await getCountryByCallingCode(data.code)
+        setSelected(countryByCode)
+    }
 
     return inserting ? (
         <View style={styles.container}>
@@ -18,13 +29,29 @@ const CodeFilter: FC<IProps> = ({ onFilter }) => {
                 keyboardType='number-pad'
                 style={[styles.input, { marginTop: 2 }]}
                 containerStyle={{ margin: 10 }}
+                controlled={{
+                    name: 'code',
+                    control,
+                    rules: {
+                        required: true
+                    }
+                }}
             />
-            <Button 
-                label='Cancelar'
-                onPress={() => setInserting(false)}
-                style={[styles.button, styles.buttonRed]}
-                textStyle={styles.buttonText}
-            />
+
+            <View style={styles.buttonsContainer}>
+                <Button 
+                    label='Aceptar'
+                    onPress={handleSubmit(setCodeManually)}
+                    style={[styles.button, styles.buttonGreen]}
+                    textStyle={styles.buttonText}
+                />
+                <Button 
+                    label='Cancelar'
+                    onPress={() => setInserting(false)}
+                    style={[styles.button, styles.buttonRed]}
+                    textStyle={styles.buttonText}
+                />
+            </View>
         </View>
     ) : (
         <View style={styles.container}>
@@ -46,6 +73,7 @@ const CodeFilter: FC<IProps> = ({ onFilter }) => {
 
 const styles = StyleSheet.create({
     container: {
+        marginBottom: 8
     },
     input: {
         backgroundColor: globalStyles.colors.secondaryLight,
@@ -77,6 +105,10 @@ const styles = StyleSheet.create({
         fontSize: 15,
         marginBottom: 2,
         alignSelf: 'center'
+    },
+    buttonsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around'
     }
 })
 

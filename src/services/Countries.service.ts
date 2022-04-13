@@ -4,15 +4,19 @@ import axios, { AxiosRequestConfig } from "axios"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SETTINGS = {
-    VERSION: '3.1',
+    VERSIONS: {
+        '2': 'v2',
+        '3.1': 'v3.1'
+    },
 }
 
 const ENDPOINTS = {
     all: 'all',
-    code: 'alpha'
+    code: 'alpha',
+    callingCode: 'callingcode'
 }
 
-const URL = `https://restcountries.com/v${SETTINGS.VERSION}`
+const URL = 'https://restcountries.com'
 
 const config: AxiosRequestConfig = {}
 
@@ -24,7 +28,7 @@ const config: AxiosRequestConfig = {}
 export async function getAllCountries(): Promise<Array<Country>> {
     let countries: Array<Country> = []
     try {
-        const list = await axios.get<Array<any>>(`${URL}/${ENDPOINTS.all}`, {
+        const list = await axios.get<Array<any>>(`${URL}/${SETTINGS.VERSIONS['3.1']}/${ENDPOINTS.all}`, {
             ...config,
             params: {
                 fields: 'name,idd,flags'
@@ -56,7 +60,7 @@ export async function getAllCountries(): Promise<Array<Country>> {
  */
 async function getCountryByCode(code: string): Promise<Country | null>{
     try {
-        const country = await axios.get(`${URL}/${ENDPOINTS.code}/${code}`, {
+        const country = await axios.get(`${URL}/${SETTINGS.VERSIONS['3.1']}/${ENDPOINTS.code}/${code}`, {
             ...config
         })
         const data = country.data
@@ -76,6 +80,56 @@ async function getCountryByCode(code: string): Promise<Country | null>{
     } catch (error) {
         return null
     }
+}
+
+/**
+ * Searchs a country by the calling root code on REST countries API
+ * @param code the calling root code to search (without suffix)
+ * @returns the country of the root code or null if not found
+ */
+export async function getCountryByCallingCode(code: 'string'): Promise<Country> {
+    /* try {
+        const country = await axios.get(`${URL}/${SETTINGS.VERSIONS[2]}/${ENDPOINTS.callingCode}/${code}`)
+        const { data } = country
+        if(data && data.length > 0){
+            const { nativeName, flags, callingCodes } = data[0]
+            return {
+                name: nativeName,
+                flag: flags.png ? flags.png : flags.svg,
+                code: callingCodes[0],
+                idd: {
+                    root: '',
+                    suffixes: []
+                }
+            }
+        }
+    } catch (error) {
+        
+    }
+    return null */
+    let country: Country = {
+        code,
+        flag: '',
+        idd: {
+            root: '',
+            suffixes: []
+        },
+        name: ''
+    }
+    try {
+        const countries = await getAllCountries()
+        const found = countries.find(country => {
+            const countryCode: any = country.code
+            const joined = countryCode.root + countryCode.suffix
+            return joined === code
+        })
+        if(found){
+            country = found
+        }
+    } catch (error) {
+        return country
+    }
+    return country
 }
 
 
