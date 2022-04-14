@@ -87,26 +87,7 @@ async function getCountryByCode(code: string): Promise<Country | null>{
  * @param code the calling root code to search (without suffix)
  * @returns the country of the root code or null if not found
  */
-export async function getCountryByCallingCode(code: 'string'): Promise<Country> {
-    /* try {
-        const country = await axios.get(`${URL}/${SETTINGS.VERSIONS[2]}/${ENDPOINTS.callingCode}/${code}`)
-        const { data } = country
-        if(data && data.length > 0){
-            const { nativeName, flags, callingCodes } = data[0]
-            return {
-                name: nativeName,
-                flag: flags.png ? flags.png : flags.svg,
-                code: callingCodes[0],
-                idd: {
-                    root: '',
-                    suffixes: []
-                }
-            }
-        }
-    } catch (error) {
-        
-    }
-    return null */
+export async function getCountryByCallingCode(code: string): Promise<Country> {
     let country: Country = {
         code,
         flag: '',
@@ -119,9 +100,17 @@ export async function getCountryByCallingCode(code: 'string'): Promise<Country> 
     try {
         const countries = await getAllCountries()
         const found = countries.find(country => {
-            const countryCode: any = country.code
-            const joined = countryCode.root + countryCode.suffix
-            return joined === code
+            let { idd: { root, suffixes } } = country
+            root = root.replace('+', '')
+            if(code.startsWith(root)){
+                for (const suffix of suffixes) {
+                    const joined = root + suffix
+                    if(joined == code){
+                        return true
+                    }
+                }
+            }
+            return false
         })
         if(found){
             country = found

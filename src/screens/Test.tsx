@@ -1,12 +1,19 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect } from 'react'
 import { View, StyleSheet, Text } from 'react-native'
 import Select from '../components/Select'
+import { getCountryByCallingCode } from '../services/Countries.service'
 
 interface IProps {
 
 }
 
 const Test: FC<IProps> = (props) => {
+
+    useEffect(() => {
+        getCountryByCallingCode('59')
+        .then(res => console.log(res))
+    }, [])
+
     return (
         <View>
             <Text style={styles.text}>Holaaa</Text>

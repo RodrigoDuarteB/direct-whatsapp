@@ -123,20 +123,25 @@ const CountryBadge: FC<ICountryBadgeProps> = ({ country, selected, onPress }) =>
     const { code } = country
     return (
         <TouchableOpacity
-            style={[countryBadgeStyles.container, { backgroundColor: selected ? '#c4c4c4' : '' }]}
+            style={[
+                countryBadgeStyles.container,
+                selected && countryBadgeStyles.selected
+            ]}
             onPress={() => onPress()}
         >
-            <View style={countryBadgeStyles.flagCode}>
+            <View style={[countryBadgeStyles.flagContainer]}>
                 {/* flag */}
                 <Image source={{uri: country.flag}} style={countryBadgeStyles.flag}/>
 
                 {/* name */}
                 <Text style={[countryBadgeStyles.text, {color: selected ? 'black' : 'white', marginLeft: 3}]}>
-                    {typeof code !== 'string' ? code.root+(code.suffix) : code}
+                    {typeof code !== 'string' ? `${code.root}(${code.suffix})` : code}
                 </Text>
             </View>
 
-            <Text style={[countryBadgeStyles.text, {color: selected ? 'black' : 'white'}]}>{country.name}</Text>
+            <View style={countryBadgeStyles.nameContainer}>
+                <Text style={[countryBadgeStyles.text, {color: selected ? 'black' : 'white'}]}>{country.name}</Text>
+            </View>
         </TouchableOpacity>
     )
 }
@@ -144,20 +149,34 @@ const CountryBadge: FC<ICountryBadgeProps> = ({ country, selected, onPress }) =>
 const countryBadgeStyles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
-        paddingVertical: 4
+        justifyContent: 'space-between',
+        paddingVertical: 4,
+        borderBottomWidth: 1,
+        borderBottomColor: 'gray'
     },
-    flagCode: {
-        flexDirection: 'row',
-        justifyContent: 'space-around'
+    selected: {
+        borderWidth: 2,
+        borderColor: globalStyles.colors.primaryLight,
+        borderBottomColor: globalStyles.colors.primaryLight,
+        backgroundColor: '#c4c4c4'
     },
     text: {
         fontWeight: '600',
         fontSize: 15
     },
     flag: {
-        width: 20,
+        width: 30,
         height: 20
+    },
+    flagContainer: {
+        width: '50%',
+        flexDirection: 'row',
+        paddingLeft: '10%',
+        alignItems: 'center'
+    },
+    nameContainer: {
+        width: '50%',
+        paddingLeft: '10%',
     }
 })
 
