@@ -10,7 +10,7 @@ interface IProps {
 const Test: FC<IProps> = (props) => {
 
     useEffect(() => {
-        getCountryByCallingCode('59')
+        getCountryByCallingCode('1212')
         .then(res => console.log(res))
     }, [])
 

@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { saveContact } from '../services/Contacts.service'
 import { saveMessage, sendMessage } from '../services/Messages.service'
 import { SendMessage } from '../models/models'
+import IconButton from '../components/IconButton'
 
 interface IProps extends ScreenProps, Props {
 
@@ -27,7 +28,12 @@ const Home: FC<IProps> = ({ navigation }) => {
 
     useEffect(() => {        
         AsyncStorage.getAllKeys()
-        .then(res => console.log(res))
+        .then(async keys => {
+            for (const key of keys) {
+                const data = await AsyncStorage.getItem(key)
+                console.log(`${key} =>`, data)
+            }
+        })
 
         //AsyncStorage.multiRemove(['lastUsed', 'messages'])
     }, [])
@@ -93,6 +99,12 @@ const Form: FC<IFormProps> = (props) => {
     
     return (
         <View style={formStyles.container}>
+            <IconButton 
+                icon={<Ionicicons name='reload-circle' color={'black'} size={30}/>}
+                onPress={() => {}}
+                style={{ alignSelf: 'flex-end', margin: 0 }}
+            />
+
             <View style={formStyles.inputsContainer}>
                 {/* code */}
                 <DropdownSelect 
@@ -189,7 +201,8 @@ const Form: FC<IFormProps> = (props) => {
 
 const formStyles = StyleSheet.create({
     container: {
-        padding: 20
+        padding: 20,
+        paddingTop: 0
     },
     inputsContainer: {
         flexDirection: 'row',

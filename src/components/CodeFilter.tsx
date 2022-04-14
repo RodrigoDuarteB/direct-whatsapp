@@ -5,6 +5,7 @@ import { useCountries } from '../context/Countries.context'
 import { getCountryByCallingCode } from '../services/Countries.service'
 import { globalStyles } from '../styles/globals'
 import Button from './Button'
+import Disabled from './Disabled'
 import Input from './Input'
 
 interface IProps {
@@ -14,45 +15,49 @@ interface IProps {
 const CodeFilter: FC<IProps> = ({ onFilter }) => {
     const { setSelected } = useCountries()
     const [inserting, setInserting] = useState(false)
+    const [fetching, setFetching] = useState(false)
     const { handleSubmit, control } = useForm()
 
     async function setCodeManually(data: any){
-        console.log(data.code)
         const countryByCode = await getCountryByCallingCode(data.code)
         setSelected(countryByCode)
+        setInserting(false)
+        setFetching(false)
     }
 
     return inserting ? (
-        <View style={styles.container}>
-            <Input 
-                label='Código'
-                keyboardType='number-pad'
-                style={[styles.input, { marginTop: 2 }]}
-                containerStyle={{ margin: 10 }}
-                controlled={{
-                    name: 'code',
-                    control,
-                    rules: {
-                        required: true
-                    }
-                }}
-            />
+        <Disabled enabled={!fetching}>
+            <View style={styles.container}>
+                <Input 
+                    label='Código'
+                    keyboardType='number-pad'
+                    style={[styles.input, { marginTop: 2 }]}
+                    containerStyle={{ margin: 10 }}
+                    controlled={{
+                        name: 'code',
+                        control,
+                        rules: {
+                            required: true
+                        }
+                    }}
+                />
 
-            <View style={styles.buttonsContainer}>
-                <Button 
-                    label='Aceptar'
-                    onPress={handleSubmit(setCodeManually)}
-                    style={[styles.button, styles.buttonGreen]}
-                    textStyle={styles.buttonText}
-                />
-                <Button 
-                    label='Cancelar'
-                    onPress={() => setInserting(false)}
-                    style={[styles.button, styles.buttonRed]}
-                    textStyle={styles.buttonText}
-                />
+                <View style={styles.buttonsContainer}>
+                    <Button 
+                        label='Aceptar'
+                        onPress={handleSubmit(setCodeManually)}
+                        style={[styles.button, styles.buttonGreen]}
+                        textStyle={styles.buttonText}
+                    />
+                    <Button 
+                        label='Cancelar'
+                        onPress={() => setInserting(false)}
+                        style={[styles.button, styles.buttonRed]}
+                        textStyle={styles.buttonText}
+                    />
+                </View>
             </View>
-        </View>
+        </Disabled>
     ) : (
         <View style={styles.container}>
             <Input 

@@ -88,6 +88,8 @@ async function getCountryByCode(code: string): Promise<Country | null>{
  * @returns the country of the root code or null if not found
  */
 export async function getCountryByCallingCode(code: string): Promise<Country> {
+    code = `+${code.replace(/[^0-9]+/g, '')}`
+
     let country: Country = {
         code,
         flag: '',
@@ -101,7 +103,7 @@ export async function getCountryByCallingCode(code: string): Promise<Country> {
         const countries = await getAllCountries()
         const found = countries.find(country => {
             let { idd: { root, suffixes } } = country
-            root = root.replace('+', '')
+            
             if(code.startsWith(root)){
                 for (const suffix of suffixes) {
                     const joined = root + suffix

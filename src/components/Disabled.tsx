@@ -17,7 +17,6 @@ const Disabled: FC<IProps> = (props) => {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: 'rgba(0, 0, 0, 0.1)',
-        alignSelf: 'flex-start'
     }
 })
 
