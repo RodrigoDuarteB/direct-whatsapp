@@ -44,7 +44,7 @@ export async function getContacts(): Promise<Array<Contact> | null>{
 export async function saveContact(name: string, selectedCountry: Country, phoneNumber: string): Promise<void> {
     const perm = await checkWritePermission()
     if(perm){
-        const { code: { root, suffix } } = selectedCountry
+        const { code } = selectedCountry
 
         const newContact: Contact = {
             givenName: name,
@@ -52,7 +52,7 @@ export async function saveContact(name: string, selectedCountry: Country, phoneN
             phoneNumbers: [
                 {
                     label: 'mobile',
-                    number: `${root + suffix} ${phoneNumber}`
+                    number: `${typeof code !== 'string' ? code.root + code.suffix : code} ${phoneNumber}}`
                 }
             ],
             recordID: "",

@@ -11,8 +11,7 @@ const URL = 'https://wa.me'
  * @returns the checked phone number
  */
 function checkPhoneNumber(phoneNumber: string){
-    //to do
-    return phoneNumber
+    return phoneNumber.replace(/[^0-9]+/g, '')
 }
 
 /**
@@ -22,8 +21,9 @@ function checkPhoneNumber(phoneNumber: string){
  * @param message the message to send
  */
 export async function sendMessage(selectedCountry: Country, phoneNumber: string, message: string){
-    const { code: { root, suffix } } = selectedCountry
-    const checkedPhoneNumber = root + suffix + checkPhoneNumber(phoneNumber)
+    const { code } = selectedCountry
+    const checkedPhoneNumber = `${typeof code !== 'string' ? code.root + code.suffix : code}` + checkPhoneNumber(phoneNumber)
+    
     await Linking.openURL(`${URL}/${checkedPhoneNumber}?text=${message}`)
 }
 

@@ -77,7 +77,7 @@ interface IFormProps {
 
 const Form: FC<IFormProps> = (props) => {
     const { selected } = useCountries()
-    const { handleSubmit, control, watch } = useForm()
+    const { handleSubmit, control, watch, reset } = useForm()
 
     const saveContactEnabled = watch('saveContact', true)
 
@@ -95,13 +95,16 @@ const Form: FC<IFormProps> = (props) => {
 
         //finally send message to whatsapp (we sure that selected is not null through form)
         await sendMessage(selected!, formCasted.phoneNumber, formCasted.message)
+        reset()
     }
     
     return (
         <View style={formStyles.container}>
             <IconButton 
                 icon={<Ionicicons name='reload-circle' color={'black'} size={30}/>}
-                onPress={() => {}}
+                onPress={() => reset({}, {
+                    keepErrors: true,
+                })}
                 style={{ alignSelf: 'flex-end', margin: 0 }}
             />
 
