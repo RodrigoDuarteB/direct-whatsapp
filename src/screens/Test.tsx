@@ -16,7 +16,7 @@ const Test: FC<IProps> = (props) => {
 
     return (
         <View>
-            <Text style={styles.text}>HolaaasssXD</Text>
+            <Text style={styles.text}>Holaaa</Text>
             <Select 
                 data={[1, 2, 3, 4, 5, 6, 7]}
                 renderSelectedItem={(item) => {
