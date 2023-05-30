@@ -93,6 +93,7 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
+    namespace "com.directwhatsapp"
     defaultConfig {
         applicationId "com.directwhatsapp"
         minSdkVersion rootProject.ext.minSdkVersion
