@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useState } from 'react'
-import { View, StyleSheet, StyleProp, ViewStyle, FlatList, TouchableWithoutFeedback, ListRenderItemInfo } from 'react-native'
+import { View, StyleSheet, StyleProp, ViewStyle, FlatList, TouchableWithoutFeedback, ListRenderItemInfo, Text, TouchableOpacity, VirtualizedList } from 'react-native'
 import { ControlledInput, Props } from '../utils/interfaces'
 import AbsoluteDropdown from './AbsoluteDropdown'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
@@ -8,11 +8,11 @@ import IconButton from './IconButton'
 
 interface IProps<T> extends Props, ControlledInput {
     data: Array<T>
-    renderSelectedItem: (item?: T) => React.ReactNode
-    renderListItem: (info: ListRenderItemInfo<T>) => React.ReactNode
+    renderItem?: (info: ListRenderItemInfo<T>) => React.ReactNode
+    renderSelectedItem?: (item?: T) => React.ReactNode
     initialSelectedItem?: T
-    extraDataBeforeList?: React.ReactNode
-    extraDataAfterList?: React.ReactNode
+    prependChild?: React.ReactNode
+    appendChild?: React.ReactNode
     dropdownStyle?: StyleProp<ViewStyle>
     onSelect?: (selected: T) => void
 }
@@ -22,74 +22,109 @@ function Select<T = any>(props: PropsWithChildren<IProps<T>>) {
     const [downed, setDowned] = useState(false)
     
     return (
-        <View style={[styles.container, props.style]}>
-            {props.renderSelectedItem(selected)}
-
-            <IconButton 
-                icon={
-                    <MaterialIcons 
-                        name={ downed ? 'expand-less' : 'expand-more' } 
-                        color={'white'} 
-                        size={20}
-                        style={{ alignSelf: 'flex-end' }}
-                    />
-                }
-                onPress={() => setDowned(!downed)}
-            />
-
-            {/* downed &&
-                <View
-                    style={[styles.dropdown, props.dropdownStyle]}
-                >
-                    {props.extraDataBeforeList}
-                    <View style={{height: '100%', width: '100%'}}>
-
-                    <FlatList 
-                        data={props.data}
-                        renderItem={(info) => {
-                            return (
-                                <TouchableWithoutFeedback
-                                    onPress={() => {
-                                        props.onSelect && props.onSelect(info.item)
-                                        setSelected(info.item)
-                                        setDowned(false)
-                                    }}
-                                >
-                                    {props.renderListItem(info)}
-                                </TouchableWithoutFeedback>
-                            )
-                        }}
-                    />
-                    </View>
-
-                    {props.extraDataAfterList}
-                </View> */
-            }
-            <AbsoluteDropdown
-                style={props.dropdownStyle}
-                dropped={downed}
+        <View>
+            {/* select */}
+            <View 
+                style={[styles.container, props.style]}
             >
-                {props.extraDataBeforeList}
+                {props.renderSelectedItem ? 
+                    props.renderSelectedItem(selected) : 
+                    <View>
+                        <Text>{selected}</Text>
+                    </View>
+                }
 
-                <FlatList 
+                <IconButton 
+                    icon={
+                        <MaterialIcons 
+                            name={ downed ? 'expand-less' : 'expand-more' } 
+                            color={'white'} 
+                            size={20}
+                            style={{ alignSelf: 'flex-end' }}
+                        />
+                    }
+                    onPress={() => setDowned(!downed)}
+                />
+            </View>
+
+            {/* { downed && <FlatList<T> 
                     data={props.data}
+                    initialNumToRender={4}
                     renderItem={(info) => {
                         return (
-                            <TouchableWithoutFeedback
+                            <TouchableOpacity
                                 onPress={() => {
                                     props.onSelect && props.onSelect(info.item)
                                     setSelected(info.item)
                                     setDowned(false)
                                 }}
                             >
-                                {props.renderListItem(info)}
-                            </TouchableWithoutFeedback>
+                                {props.renderItem ? 
+                                    props.renderItem(info) :
+                                    <View style={{ 
+                                        alignItems: 'center',
+                                        backgroundColor: info.item == selected ? 'white' : 'black'
+                                    }}>
+                                        <Text style={{
+                                            color: info.item == selected ? 'black' : 'black'
+                                        }}>
+                                            {info.item}
+                                        </Text>
+                                    </View>
+                                }
+                            </TouchableOpacity>
                         )
                     }}
-                    style={{width: '100%'}}
-                />
+                    style={{width: '100%', height: 150, position: 'absolute', top: '100%', zIndex: 3}}
+                />} */}
 
-                {props.extraDataAfterList}
+            {/* dropdown */}
+            <AbsoluteDropdown
+                style={props.dropdownStyle}
+                dropped={downed}
+            >
+                {
+                    props.data.length > 0 ?
+                <>
+                    {props.prependChild}
+                    
+                    <FlatList<T> 
+                        data={props.data}
+                        initialNumToRender={4}
+                        renderItem={(info) => {
+                            return (
+                                <TouchableOpacity
+                                    delayPressIn={50}
+                                    onPress={() => {
+                                        props.onSelect && props.onSelect(info.item)
+                                        setSelected(info.item)
+                                        setDowned(false)
+                                    }}
+                                >
+                                    {props.renderItem ? 
+                                        props.renderItem(info) :
+                                        <View style={{ 
+                                            alignItems: 'center',
+                                            backgroundColor: info.item == selected ? 'white' : 'black'
+                                        }}>
+                                            <Text style={{
+                                                color: info.item == selected ? 'black' : 'white'
+                                            }}>
+                                                {info.item}
+                                            </Text>
+                                        </View>
+                                    }
+                                </TouchableOpacity>
+                            )
+                        }}
+                        style={{width: '100%'}}
+                    />
+
+                    {props.appendChild}
+                </>
+                    : 
+                <Text>Sin datos</Text>
+                }
             </AbsoluteDropdown>
         </View>
     )
@@ -102,20 +137,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 5,
         borderRadius: 10,
-        width: 50,
-    },
-    dropdown: {
-        backgroundColor: globalStyles.colors.secondary,
-        position: 'absolute',
-        shadowColor: globalStyles.colors.primary,
-        shadowOffset: {
-            width: 0,
-            height: 1
-        },
-        shadowOpacity: 0.27,
-        borderRadius: 10,
-        top: '100%',
-        left: 0,
+        width: 70,
     }
 })
 
