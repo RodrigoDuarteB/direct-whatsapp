@@ -1,106 +1,75 @@
 import React, { FC, useEffect, useState, memo } from 'react'
-import { View, StyleSheet, Text, TouchableOpacity, FlatList } from 'react-native'
+import { View, StyleSheet, Text, TouchableOpacity, FlatList, ScrollView, Image } from 'react-native'
 import Select from '../components/Select'
-import { getCountryByCallingCode } from '../services/Countries.service'
+import { getCountryByCallingCode, getAllCountries } from '../services/Countries.service'
+import { Dropdown } from 'react-native-element-dropdown'
+import { Country } from '../models/models'
 
 interface IProps {
 
 }
 
 const Test: FC<IProps> = (props) => {
-    const [selected, setSelected] = useState(0)
-    const [dropped, setDropped] = useState(false)
+    const [countries, setCountries] = useState<Country[]>([])
+    const [country, setCountry] = useState<Country | null>(null)
 
     useEffect(() => {
         /* getCountryByCallingCode('1212')
         .then(res => console.log(res)) */
+        getAllCountries()
+        .then(res => {
+            console.log(res)
+            setCountries(res)
+        })
     }, [])
-
-    function generateNthArray(nth: number) {
-        var array = []
-        for (let i = 0; i < nth; i++) {
-            array[i] = i
-        }
-        return array
-    }
 
     const _renderItem = (info: any) => {
         return (
-            <Text style={{ color: 'black' }}>{info.item}</Text>
+            <Text key={info.item} style={{ color: 'black' }}>{info.item}</Text>
         )
     }
 
     return (
         <View style={{padding: 15}}>
-            <Text style={styles.text}>{selected}</Text>
-
-            {/* select */}
-            <View>
-                {/* select */}
-                <TouchableOpacity
-                    onPress={() => setDropped(!dropped)}
-                >
-                    <Text style={{ color: 'black', backgroundColor: 'green', padding: 5 }}>
-                        { selected }
-                    </Text>
-                </TouchableOpacity>
-                
-                {/* dropdown */}
-                {
-                    dropped && 
-                    <View style={{
-                        backgroundColor: 'pink',
-                        position: 'absolute',
-                        top: '100%',
-                        width: '100%',
-                    }}>
-                        <FlatList 
-                            data={generateNthArray(105)}
-                            renderItem={_renderItem}
-                            initialNumToRender={8}
-                        />
-                    </View>
-                }
-                {/* <Text style={{ color: 'black', backgroundColor: 'green', padding: 5 }}>
-                    Hola
-                </Text> */}
-            </View>
-
-            
-            {/* <Select<number> 
-                data={generateNthArray(180)}
-                renderItem={({ item }) => {
+            <Dropdown 
+                data={countries}
+                labelField='name'
+                valueField='idd'
+                onChange={(item) => setCountry(item)}
+                style={{
+                    backgroundColor: 'black'
+                }}
+                renderItem={(country) => {
                     return (
-                        <View style={{ backgroundColor: selected == item ? 'white' : 'black', alignItems: 'center', paddingVertical: 12 }}>
-                            <Text style={{ color: selected == item ? 'black' : 'white'}}>{item}</Text>
+                        <View style={{
+                            flexDirection: 'row'
+                        }}>
+                            <Image 
+                                source={{ uri: country.flag }} 
+                                style={{
+                                    width: 20,
+                                    height: 15
+                                }}
+                            />
+                            <Text style={{ color: 'black'}}>{country.name}</Text>
                         </View>
                     )
                 }}
-                renderSelectedItem={(item) => {
+                value={country}
+                renderLeftIcon={() => {
                     return (
-                        <View>
-                            <Text style={{ color: 'white' }}>{item}</Text>
-                        </View>
+                        <Image 
+                            source={{ uri: country?.flag }}
+                            style={{
+                                width: 20,
+                                height: 15
+                            }}
+                        /> 
                     )
                 }}
-                prependChild={
-                    <Text>Números</Text>
-                }
-                appendChild={
-                    <Text>End</Text>
-                }
-                style={styles.select}
-                dropdownStyle={{
-                    top: '105%',
-                    alignItems: 'center',
-                    paddingVertical: 5, 
-                    paddingHorizontal: 1,
-                    width: 150,
-                    zIndex: 999
-                }}
-                onSelect={(item) => setSelected(item)}
-            /> */}
-            {/* <Text style={{ backgroundColor: 'pink'}}>Holaa</Text> */}
+                search
+            />
+            <Text style={{ backgroundColor: 'pink'}}>Holaa</Text>
         </View>
     )
 }
