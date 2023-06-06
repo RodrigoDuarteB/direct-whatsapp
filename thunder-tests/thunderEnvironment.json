@@ -1,0 +1,17 @@
+[
+  {
+    "_id": "b5f39a2a-08c2-4548-9597-00b4d4a59a23",
+    "name": "(Global Env)",
+    "default": false,
+    "global": true,
+    "sortNum": -2,
+    "created": "2023-06-01T15:13:49.300Z",
+    "modified": "2023-06-01T15:13:49.300Z",
+    "data": [
+      {
+        "name": "baseUrl",
+        "value": "https://restcountries.com/v3.1"
+      }
+    ]
+  }
+]

@@ -4,6 +4,7 @@ import Select from '../components/Select'
 import { getCountryByCallingCode, getAllCountries } from '../services/Countries.service'
 import { Dropdown } from 'react-native-element-dropdown'
 import { Country } from '../models/models'
+import { globalStyles } from '../styles/globals'
 
 interface IProps {
 
@@ -18,7 +19,7 @@ const Test: FC<IProps> = (props) => {
         .then(res => console.log(res)) */
         getAllCountries()
         .then(res => {
-            console.log(res)
+            //console.log(res)
             setCountries(res)
         })
     }, [])
@@ -37,23 +38,67 @@ const Test: FC<IProps> = (props) => {
                 valueField='idd'
                 onChange={(item) => setCountry(item)}
                 style={{
-                    backgroundColor: 'black'
+                    backgroundColor: globalStyles.colors.secondary,
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: 5,
+                    borderTopLeftRadius: 15,
+                    borderBottomLeftRadius: 15,
+                    borderColor: globalStyles.colors.primaryLight
                 }}
-                renderItem={(country) => {
+                renderItem={(item) => {
                     return (
                         <View style={{
-                            flexDirection: 'row'
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            paddingVertical: 5,
+                            borderBottomWidth: 1,
+                            borderBottomColor: 'gray'
                         }}>
-                            <Image 
-                                source={{ uri: country.flag }} 
-                                style={{
-                                    width: 20,
-                                    height: 15
+                            <View style={{
+                                width: '50%',
+                                flexDirection: 'row',
+                                paddingLeft: '10%',
+                                alignItems: 'center'
+                            }}>
+                                <Image 
+                                    source={{ uri: item.flag }} 
+                                    style={{
+                                        width: 30,
+                                        height: 20
+                                    }}
+                                />
+                            </View>
+
+                            <View style={{
+                                width: '50%',
+                                paddingLeft: '10%',
+                            }}>
+                                <Text style={{ 
+                                    color: country?.name == item.name ? 'black' : 'white',
+                                    textAlign: 'left' 
                                 }}
-                            />
-                            <Text style={{ color: 'black'}}>{country.name}</Text>
+                                    >
+                                    {item.name}
+                                </Text>
+                            </View>
                         </View>
                     )
+                }}
+                containerStyle={{
+                    maxHeight: 320,
+                    backgroundColor: globalStyles.colors.secondary,
+                    width: 230,
+                    shadowColor: globalStyles.colors.primary,
+                    shadowOffset: {
+                        width: 0,
+                        height: 1
+                    },
+                    shadowOpacity: 0.27,
+                    elevation: 8,
+                    borderRadius: 10,
+                    borderTopLeftRadius: 0
                 }}
                 value={country}
                 renderLeftIcon={() => {
@@ -68,6 +113,7 @@ const Test: FC<IProps> = (props) => {
                     )
                 }}
                 search
+                
             />
             <Text style={{ backgroundColor: 'pink'}}>Holaa</Text>
         </View>
