@@ -1,4 +1,4 @@
-import React, { createContext, FC, useContext, useEffect, useState } from 'react'
+import React, { createContext, FC, useContext, useEffect, useState, PropsWithChildren } from 'react'
 import { Country } from '../models/models'
 import { getAllCountries, saveLastUsed, setSelectedCountry } from '../services/Countries.service'
 
@@ -14,7 +14,7 @@ const CountriesContext = createContext<ICountriesContext>({
     setSelected: () => {},
 })
 
-const CountriesProvider: FC = ({ children }) => {
+const CountriesProvider: FC<PropsWithChildren> = ({ children }) => {
     const [selected, setSelected] = useState<Country | null>(null)
     const [countries, setCountries] = useState<Array<Country>>([])
 

@@ -2,7 +2,6 @@ import React, { FC, useState, useEffect } from 'react'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import AppLogo from '../components/AppLogo'
 import Button from '../components/Button'
-import DropdownSelect from '../components/DropdownSelect'
 import GoHistory from '../components/GoHistory'
 import Input from '../components/Input'
 import Layout from '../components/Layout'
@@ -18,6 +17,7 @@ import { saveContact } from '../services/Contacts.service'
 import { saveMessage, sendMessage } from '../services/Messages.service'
 import { SendMessage } from '../models/models'
 import IconButton from '../components/IconButton'
+import CountriesDropdown from '../components/CountriesDropdown'
 
 interface IProps extends ScreenProps, Props {
 
@@ -27,13 +27,13 @@ const Home: FC<IProps> = ({ navigation }) => {
     const [showErrors, setShowErrors] = useState(false)
 
     useEffect(() => {        
-        AsyncStorage.getAllKeys()
+        /* AsyncStorage.getAllKeys()
         .then(async keys => {
             for (const key of keys) {
                 const data = await AsyncStorage.getItem(key)
                 console.log(`${key} =>`, data)
             }
-        })
+        }) */
 
         //AsyncStorage.multiRemove(['lastUsed', 'messages'])
     }, [])
@@ -79,7 +79,7 @@ const Form: FC<IFormProps> = (props) => {
     const { selected } = useCountries()
     const { handleSubmit, control, watch, reset } = useForm()
 
-    const saveContactEnabled = watch('saveContact', true)
+    const saveContactEnabled = watch('saveContact', false)
 
     async function send(form: any) {
         let formCasted: SendMessage = form
@@ -110,7 +110,7 @@ const Form: FC<IFormProps> = (props) => {
 
             <View style={formStyles.inputsContainer}>
                 {/* code */}
-                <DropdownSelect 
+                {/* <DropdownSelect 
                     label='Código'
                     controlled={{
                         name: 'code',
@@ -120,7 +120,8 @@ const Form: FC<IFormProps> = (props) => {
                             required: !selected ? true : false,
                         }
                     }}
-                />
+                /> */}
+                <CountriesDropdown />
 
                 {/* phone number */}
                 <Input 
