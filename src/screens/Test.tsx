@@ -5,23 +5,19 @@ import { getCountryByCallingCode, getAllCountries } from '../services/Countries.
 import { Dropdown } from 'react-native-element-dropdown'
 import { Country } from '../models/models'
 import { globalStyles } from '../styles/globals'
+import CountriesService from '../services/CountriesService'
 
 interface IProps {
 
 }
 
 const Test: FC<IProps> = (props) => {
-    const [countries, setCountries] = useState<Country[]>([])
+    const [countries, setCountries] = useState<any[]>([])
     const [country, setCountry] = useState<Country | null>(null)
 
     useEffect(() => {
-        /* getCountryByCallingCode('1212')
-        .then(res => console.log(res)) */
-        getAllCountries()
-        .then(res => {
-            //console.log(res)
-            setCountries(res)
-        })
+        CountriesService.getAll()
+        .then(res => setCountries(res))
     }, [])
 
     const _renderItem = (info: any) => {
