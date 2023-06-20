@@ -24,5 +24,19 @@
     "created": "2023-06-01T15:54:03.771Z",
     "modified": "2023-06-01T15:54:03.771Z",
     "headers": []
+  },
+  {
+    "_id": "6540e7dc-ffa6-4650-8d65-5e633755d3f9",
+    "colId": "bc227273-9a0c-45d7-9f2d-9835d1c6ce0f",
+    "containerId": "",
+    "name": "By Code",
+    "url": "{{baseUrl}}/all",
+    "method": "GET",
+    "sortNum": 35000,
+    "created": "2023-06-20T00:54:29.449Z",
+    "modified": "2023-06-20T00:54:29.449Z",
+    "headers": [],
+    "params": [],
+    "tests": []
   }
 ]

@@ -1,3 +1,4 @@
+import { Country } from "../models/models";
 import { Requester } from "./Requester";
 
 class CountriesService extends Requester {
@@ -6,8 +7,9 @@ class CountriesService extends Requester {
         super('https://restcountries.com/v3.1')
     }
 
-    async getAll(): Promise<Array<any>> {
-        return this.request('all', 'GET', {
+    
+    async getAll(): Promise<Array<Country>> {
+        return this.request<Array<Country>>('all', 'GET', {
             params: {
                 fields: 'name,idd,translations,flags'
             }
@@ -17,9 +19,31 @@ class CountriesService extends Requester {
                 idd: c.idd,
                 name: c.translations.spa ? c.translations.spa.common : c.name.common,
                 flag: c.flags.png ? c.flags.png : c.flags.svg,
-                mainCode: c.idd.root + c.idd.suffixes[0]
-            }
-        }).sort((a: any, b: any) => a.name.localeCompare(b.name)))    
+                code: {
+                    root: c.idd.root,
+                    suffix: c.idd.suffixes[0]
+                }
+            } as Country
+        }).sort((a, b) => a.name.localeCompare(b.name)))    
+        .catch(e => [])
+    }
+
+
+    async getOneByCode(code: string): Promise<Country | undefined> {
+        return this.request<Country | undefined>(`alpha/${code}`, 'GET')
+        .then((c: any) => {
+            c = c[0]
+            return {
+                idd: c.idd,
+                name: c.translations.spa ? c.translations.spa.common : c.name.common,
+                flag: c.flags.png ? c.flags.png : c.flags.svg,
+                code: {
+                    root: c.idd.root,
+                    suffix: c.idd.suffixes[0]
+                }
+            } as Country
+        })
+        .catch(e => undefined)
     }
 
 }

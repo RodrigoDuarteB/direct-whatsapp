@@ -6,18 +6,27 @@ import { Dropdown } from 'react-native-element-dropdown'
 import { Country } from '../models/models'
 import { globalStyles } from '../styles/globals'
 import CountriesService from '../services/CountriesService'
+import DeviceCountry from 'react-native-device-country';
 
 interface IProps {
 
 }
 
 const Test: FC<IProps> = (props) => {
-    const [countries, setCountries] = useState<any[]>([])
+    const [countries, setCountries] = useState<Country[]>([])
     const [country, setCountry] = useState<Country | null>(null)
 
     useEffect(() => {
+        DeviceCountry.getCountryCode('any')
+        .then(res => {
+            CountriesService.getOneByCode('c')
+            .then(res => console.log(res))
+        })
+
         CountriesService.getAll()
-        .then(res => setCountries(res))
+        .then(res => {
+            setCountries(res)
+        })
     }, [])
 
     const _renderItem = (info: any) => {

@@ -1,13 +1,17 @@
+interface Idd {
+    root: string
+    suffixes: Array<string>
+}
+
+interface CountryCode {
+    root: string
+    suffix: string
+}
+
 export interface Country {
-    code: {
-        root: string
-        suffix: string
-    } | string
+    code: CountryCode | string
     name: string
-    idd: {
-        root: string
-        suffixes: Array<string>
-    },
+    idd: Idd,
     flag: string
 }
 

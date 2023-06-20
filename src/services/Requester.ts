@@ -12,7 +12,7 @@ export abstract class Requester {
         })
     }  
     
-    public async request(url: string, method: Method, options?: AxiosRequestConfig): Promise<any> {
+    public async request<T = any>(url: string, method: Method, options?: AxiosRequestConfig): Promise<T> {
         return this.requester.request({
             url,
             method,
