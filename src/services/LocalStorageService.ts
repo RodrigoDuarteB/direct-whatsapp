@@ -1,33 +1,59 @@
+import DeviceCountry from 'react-native-device-country';
+import uuid from 'react-native-uuid';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ICountryData, IMessageData } from "../models/interfaces";
 import { Country } from "../models/models";
 import { Message } from "../models/models";
+import CountriesService from './CountriesService';
 
 class LocalStorageService implements ICountryData, IMessageData {
 
-    getLastCountryUsed(): Promise<Country | null> {
-        //return AsyncStorage.getItem('lastCountryUsed')
-        throw new Error('not implemented')
+    async getLastCountryUsed(): Promise<Country | null> {
+        var lastUsed = await AsyncStorage.getItem('lastCountryUsed')
+        if(lastUsed){
+            return JSON.parse(lastUsed)
+        }else{
+            try {
+                const { code } = await DeviceCountry.getCountryCode()
+                const country = await CountriesService.getOneByCode(code)
+                return country ?? null
+            } catch (error) {
+                return null
+            }
+        }
     }
 
-    saveLastCountryUsed(): Promise<void> {
-        throw new Error('not implemented')
+    async saveLastCountryUsed(country: Country | null): Promise<void> {
+        if(country)
+            await AsyncStorage.setItem('lastCountryUsed', JSON.stringify(country))
     }
 
-    getMessages(): Promise<Message[]> {
-        throw new Error('not implemented')
+    async getMessages(): Promise<Message[]> {
+        var messages: Array<Message> = []
+        var saved = await AsyncStorage.getItem('messages')
+        if(saved) {
+            return JSON.parse(saved)
+        }
+        return messages
     }
 
-    removeMessages(): Promise<void> {
-        throw new Error('not implemented')
+    async saveMessage(message: Omit<Message, 'id' | 'datetime'>): Promise<void> {
+        var messages = await this.getMessages()
+        messages.push({
+            ...message,
+            id: uuid.v4() as string,
+            datetime: new Date().toString()
+        })
+        await AsyncStorage.setItem('messages', JSON.stringify(messages))
     }
 
-    saveMessage(): Promise<void> {
-        throw new Error('not implemented')
+    async removeMessages(): Promise<void> {
+        await AsyncStorage.removeItem('messages')
     }
 
-    removeMessage(id: string): Promise<void> {
-        throw new Error('not implemented')
+    async removeMessage(id: string): Promise<void> {
+        var messages = (await this.getMessages()).filter(m => m.id != id)
+        await AsyncStorage.setItem('messages', JSON.stringify(messages))
     }
     
 }

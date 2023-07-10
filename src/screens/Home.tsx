@@ -1,5 +1,5 @@
-import React, { FC, useState, useEffect } from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import React, { FC, useState } from 'react'
+import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
 import AppLogo from '../components/AppLogo'
 import Button from '../components/Button'
 import GoHistory from '../components/GoHistory'
@@ -12,12 +12,11 @@ import Ionicicons from 'react-native-vector-icons/Ionicons'
 import AlertMessage from '../components/AlertMessage'
 import CountriesProvider, { useCountries } from '../context/Countries.context'
 import { useForm } from 'react-hook-form'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { saveContact } from '../services/Contacts.service'
-import { saveMessage, sendMessage } from '../services/Messages.service'
 import { SendMessage } from '../models/models'
 import IconButton from '../components/IconButton'
 import CountriesDropdown from '../components/CountriesDropdown'
+import LocalStorageService from '../services/LocalStorageService'
+import ContactsService from '../services/ContactsService'
 
 interface IProps extends ScreenProps, Props {
 
@@ -25,18 +24,6 @@ interface IProps extends ScreenProps, Props {
 
 const Home: FC<IProps> = ({ navigation }) => {
     const [showErrors, setShowErrors] = useState(false)
-
-    useEffect(() => {        
-        /* AsyncStorage.getAllKeys()
-        .then(async keys => {
-            for (const key of keys) {
-                const data = await AsyncStorage.getItem(key)
-                console.log(`${key} =>`, data)
-            }
-        }) */
-
-        //AsyncStorage.multiRemove(['lastUsed', 'messages'])
-    }, [])
 
     return (
         <CountriesProvider>
@@ -81,20 +68,36 @@ const Form: FC<IFormProps> = (props) => {
 
     const saveContactEnabled = watch('saveContact', false)
 
+    function checkPhoneNumber(phoneNumber: string) {
+        return phoneNumber.replace(/[^0-9]+/g, '')
+    }
+
+    async function sendMessage(message: string, phoneNumber: string) {
+        const { code } = selected!
+        const checkedPhoneNumber = `${typeof code !== 'string' ? code.root + code.suffix : code}` + checkPhoneNumber(phoneNumber)
+        
+        await Linking.openURL(`https://wa.me/${checkedPhoneNumber}?text=${message}`)
+    }
+
     async function send(form: any) {
         let formCasted: SendMessage = form
         //save contact
         if(formCasted.saveContact){
-            await saveContact(formCasted.contactName!, selected!, formCasted.phoneNumber)
+            await ContactsService.saveOne(formCasted.contactName!, formCasted.phoneNumber, selected!)
         }
 
         //save message
         if(formCasted.saveMessage){
-            await saveMessage(formCasted, selected!)
+            await LocalStorageService.saveMessage({
+                message: formCasted.message,
+                phoneNumber: formCasted.phoneNumber,
+                contactSaved: formCasted.saveContact,
+                country: selected!
+            })
         }
 
         //finally send message to whatsapp (we sure that selected is not null through form)
-        await sendMessage(selected!, formCasted.phoneNumber, formCasted.message)
+        await sendMessage(formCasted.message, formCasted.phoneNumber)
         reset()
     }
     

@@ -2,12 +2,12 @@ import { Country, Message } from "./models";
 
 export interface ICountryData {
     getLastCountryUsed: () => Promise<Country | null>
-    saveLastCountryUsed: () => Promise<void>
+    saveLastCountryUsed: (country: Country | null) => Promise<void>
 }
 
 export interface IMessageData {
     getMessages: () => Promise<Array<Message>>
     removeMessages: () => Promise<void>
-    saveMessage: () => Promise<void>
+    saveMessage: (message: Omit<Message, 'id' | 'datetime'>) => Promise<void>
     removeMessage: (id: string) => Promise<void>
 }

@@ -11,7 +11,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Disabled from '../components/Disabled'
 import { globalStyles } from '../styles/globals'
 import AlertChooseAction from '../components/AlertChooseAction'
-import { getMessages, removeMessage, removeMessages } from '../services/Messages.service'
+import LocalStorageService from '../services/LocalStorageService'
 
 interface IProps extends ScreenProps {
 
@@ -72,7 +72,7 @@ const MessagesList: FC<IMessagesListProps> = (props) => {
     const [deleting, setDeleting] = useState(false)
 
     useEffect(() => {
-        getMessages()
+        LocalStorageService.getMessages()
         .then(res => setMessages(res))
     }, [deleting])
 
@@ -83,7 +83,7 @@ const MessagesList: FC<IMessagesListProps> = (props) => {
                 visible={deleting}
                 condition='Está seguro que desea limpiar el historial?'
                 onAccept={async () => {
-                    await removeMessages()
+                    await LocalStorageService.removeMessages()
                     setDeleting(false)
                 }}
                 onReject={() => {
@@ -110,9 +110,9 @@ const MessagesList: FC<IMessagesListProps> = (props) => {
                                 message={item}
                                 style={{ marginBottom: index < messages.length - 1 ? 9 : 0 }}
                                 onDelete={() => {
-                                    removeMessage(item.id)
+                                    LocalStorageService.removeMessage(item.id)
                                     .then(_ => {
-                                        getMessages()
+                                        LocalStorageService.getMessages()
                                         .then(res => setMessages(res))
                                     })
                                 }}

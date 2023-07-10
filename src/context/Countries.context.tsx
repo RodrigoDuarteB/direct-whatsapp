@@ -1,6 +1,7 @@
 import React, { createContext, FC, useContext, useEffect, useState, PropsWithChildren } from 'react'
 import { Country } from '../models/models'
-import { getAllCountries, saveLastUsed, setSelectedCountry } from '../services/Countries.service'
+import LocalStorageService from '../services/LocalStorageService'
+import CountriesService from '../services/CountriesService'
 
 interface ICountriesContext {
     countries: Array<Country>
@@ -19,14 +20,15 @@ const CountriesProvider: FC<PropsWithChildren> = ({ children }) => {
     const [countries, setCountries] = useState<Array<Country>>([])
 
     useEffect(() => {
-        setSelectedCountry(setSelected)
-        
-        getAllCountries()
+        LocalStorageService.getLastCountryUsed()
+        .then(res => setSelected(res))
+
+        CountriesService.getAll()
         .then(res => setCountries(res))
     }, [])
 
     useEffect(() => {
-        saveLastUsed(selected)
+        LocalStorageService.saveLastCountryUsed(selected)
     }, [selected])
 
     return (
