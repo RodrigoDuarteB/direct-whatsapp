@@ -72,7 +72,7 @@ const MessagesList: FC<IMessagesListProps> = (props) => {
     const [deleting, setDeleting] = useState(false)
 
     useEffect(() => {
-        LocalStorageService.getMessages()
+        new LocalStorageService().getMessages()
         .then(res => setMessages(res))
     }, [deleting])
 
@@ -83,7 +83,7 @@ const MessagesList: FC<IMessagesListProps> = (props) => {
                 visible={deleting}
                 condition='Está seguro que desea limpiar el historial?'
                 onAccept={async () => {
-                    await LocalStorageService.removeMessages()
+                    await new LocalStorageService().removeMessages()
                     setDeleting(false)
                 }}
                 onReject={() => {
@@ -110,9 +110,9 @@ const MessagesList: FC<IMessagesListProps> = (props) => {
                                 message={item}
                                 style={{ marginBottom: index < messages.length - 1 ? 9 : 0 }}
                                 onDelete={() => {
-                                    LocalStorageService.removeMessage(item.id)
+                                    new LocalStorageService().removeMessage(item.id)
                                     .then(_ => {
-                                        LocalStorageService.getMessages()
+                                        new LocalStorageService().getMessages()
                                         .then(res => setMessages(res))
                                     })
                                 }}

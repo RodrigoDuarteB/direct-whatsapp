@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useState, useEffect } from 'react'
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
 import AppLogo from '../components/AppLogo'
 import Button from '../components/Button'
@@ -15,8 +15,8 @@ import { useForm } from 'react-hook-form'
 import { SendMessage } from '../models/models'
 import IconButton from '../components/IconButton'
 import CountriesDropdown from '../components/CountriesDropdown'
-import LocalStorageService from '../services/LocalStorageService'
 import ContactsService from '../services/ContactsService'
+import { useAppInfo } from '../context/App.context'
 
 interface IProps extends ScreenProps, Props {
 
@@ -24,6 +24,10 @@ interface IProps extends ScreenProps, Props {
 
 const Home: FC<IProps> = ({ navigation }) => {
     const [showErrors, setShowErrors] = useState(false)
+    
+    useEffect(() => {
+        
+    }, [])
 
     return (
         <CountriesProvider>
@@ -65,6 +69,7 @@ interface IFormProps {
 const Form: FC<IFormProps> = (props) => {
     const { selected } = useCountries()
     const { handleSubmit, control, watch, reset } = useForm()
+    const { storageProvider } = useAppInfo()
 
     const saveContactEnabled = watch('saveContact', false)
 
@@ -88,7 +93,7 @@ const Form: FC<IFormProps> = (props) => {
 
         //save message
         if(formCasted.saveMessage){
-            await LocalStorageService.saveMessage({
+            await storageProvider.saveMessage({
                 message: formCasted.message,
                 phoneNumber: formCasted.phoneNumber,
                 contactSaved: formCasted.saveContact,

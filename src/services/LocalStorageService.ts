@@ -58,4 +58,4 @@ class LocalStorageService implements ICountryData, IMessageData {
     
 }
 
-export default new LocalStorageService
+export default LocalStorageService
