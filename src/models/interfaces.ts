@@ -11,3 +11,7 @@ export interface IMessageData {
     saveMessage: (message: Omit<Message, 'id' | 'datetime'>) => Promise<void>
     removeMessage: (id: string) => Promise<void>
 }
+
+export interface StorageService extends ICountryData, IMessageData {
+
+}

@@ -1,12 +1,12 @@
 import DeviceCountry from 'react-native-device-country';
 import uuid from 'react-native-uuid';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ICountryData, IMessageData } from "../models/interfaces";
+import { StorageService } from "../models/interfaces";
 import { Country } from "../models/models";
 import { Message } from "../models/models";
 import CountriesService from './CountriesService';
 
-class LocalStorageService implements ICountryData, IMessageData {
+class LocalStorageService implements StorageService {
 
     async getLastCountryUsed(): Promise<Country | null> {
         var lastUsed = await AsyncStorage.getItem('lastCountryUsed')

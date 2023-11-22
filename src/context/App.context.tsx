@@ -1,12 +1,10 @@
 import React, { FC, createContext, PropsWithChildren, useState, useContext } from 'react'
 import LocalStorageService from '../services/LocalStorageService'
-import GoogleCloudStorageService from '../services/GoogleCloudStorageService'
-
-type StorageProvider = LocalStorageService | GoogleCloudStorageService
+import { StorageService } from '../models/interfaces'
 
 interface IAppContext {
     isCloudSynced: boolean,
-    storageProvider: StorageProvider
+    storageProvider: StorageService
 }
 
 const AppContext = createContext<IAppContext>({
@@ -16,7 +14,7 @@ const AppContext = createContext<IAppContext>({
 
 const AppContextProvider: FC<PropsWithChildren> = ({ children }) => {
     const [isCloudSynced, setIsCloudSynced] = useState(false)
-    const [storageProvider, setStorageProvider] = useState<StorageProvider>(new LocalStorageService())
+    const [storageProvider, setStorageProvider] = useState<StorageService>(new LocalStorageService())
 
     return (
         <AppContext.Provider value={{ 
