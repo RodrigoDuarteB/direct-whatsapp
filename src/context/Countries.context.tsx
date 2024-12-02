@@ -20,7 +20,7 @@ const CountriesProvider: FC<PropsWithChildren> = ({ children }) => {
     const [countries, setCountries] = useState<Array<Country>>([])
 
     useEffect(() => {
-        LocalStorageService.getLastCountryUsed()
+        new LocalStorageService().getLastCountryUsed()
         .then(res => setSelected(res))
 
         CountriesService.getAll()
@@ -28,7 +28,7 @@ const CountriesProvider: FC<PropsWithChildren> = ({ children }) => {
     }, [])
 
     useEffect(() => {
-        LocalStorageService.saveLastCountryUsed(selected)
+        new LocalStorageService().saveLastCountryUsed(selected)
     }, [selected])
 
     return (
